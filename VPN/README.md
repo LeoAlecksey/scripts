@@ -1,0 +1,1 @@
+python3 -m PyInstaller --noconfirm --onefile --console --icon "C:/.../VPN/vpn_IMAGE.ico" --name "Install_VPN" --add-data "C:/.../VPN/.env;." --add-data "C:/.../VPN/LICENCE.md;." --add-data "C:/.../VPN/venv/Lib/site-packages/;." --paths "C:/.../VPN/venv/Lib/site-packages" -F "C:/.../VPN/main.py"
