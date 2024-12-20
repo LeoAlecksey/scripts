@@ -1,0 +1,32 @@
+name: build_prod_Tg_bot
+
+on:
+  push:
+    branches: 
+    - main
+    paths-ignore:
+    - 'Jenkinsfile'
+
+jobs:
+
+## Сборка Docker-image с tg_bot Push on DockerHub ##
+####################################################
+
+  docker_image_build_and_push:
+    name: Publish TG_bot to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Output Run Attempt
+        run: echo ${{ github.run_number }}
+
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_NAME }} -p ${{ secrets.DOCKER_PASS }}
+      - name: Build Container image
+        run: docker build -t ${{ secrets.DOCKER_REPO }}:TG-Bot-v${{ github.run_attempt }}.${{ github.run_number }} .
+      - name: Publish Docker image
+        run: docker push ${{ secrets.DOCKER_REPO }}:TG-Bot-v${{ github.run_attempt }}.${{ github.run_number }}
+  
