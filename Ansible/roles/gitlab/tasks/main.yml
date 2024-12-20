@@ -1,0 +1,117 @@
+---
+- block:
+
+  - name: Print a message
+    ansible.builtin.debug:
+      msg: 'OS is ok Ubuntu "22.04"'
+
+  - name: update && upgrade
+    ansible.builtin.apt:
+      update_cache: yes
+      upgrade: yes
+
+  - name: install curl
+    ansible.builtin.apt:
+      name: curl
+      state: present  
+
+  - name: install openssh-server
+    ansible.builtin.apt:
+      name: openssh-server
+      state: present   
+
+  - name: install ca-certificates
+    ansible.builtin.apt:
+      name: ca-certificates
+      state: present   
+
+  - name: install tzdata
+    ansible.builtin.apt:
+      name: tzdata
+      state: present
+
+  - name: install perl
+    ansible.builtin.apt:
+      name: perl
+      state: present
+  
+  - name: install postfix
+    ansible.builtin.apt:
+      name: postfix
+      state: present
+  - name: Copy MySQL
+    copy: 
+      src: "{{ role_path }}/files/script.deb.sh"
+      dest: '{{ destin_file }}'
+
+  - name: update new repo GIT
+    ansible.builtin.shell:
+      cmd: chmod 700 /root/script.deb.sh && bash /root/script.deb.sh
+
+  - name: update && upgrade
+    ansible.builtin.apt:
+      update_cache: yes
+      upgrade: yes
+
+  - name: install zabbix agent 2
+    ansible.builtin.apt:
+      deb: https://repo.zabbix.com/zabbix/7.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest+ubuntu22.04_all.deb
+  
+  - name: update && upgrade
+    ansible.builtin.apt:
+      update_cache: yes
+      upgrade: yes
+      
+  - name: install zabbix-agent2
+    ansible.builtin.apt:
+      name: zabbix-agent2
+      state: present
+      
+  - name: install zabbix-agent2-plugin
+    ansible.builtin.apt:
+      name: zabbix-agent2-plugin-*
+      state: present
+      
+  - name: Config zabbix.conf Server=
+    ansible.builtin.lineinfile:
+      path: /etc/zabbix/zabbix_agent2.conf
+      search_string: Server=127.0.0.1
+      line: Server=0.0.0.0/0
+
+  - name: Config zabbix.conf ServerActive=
+    ansible.builtin.lineinfile:
+      path: /etc/zabbix/zabbix_agent2.conf
+      search_string: ServerActive=127.0.0.1
+      line: ServerActive=192.168.0.0          # Указать адрес сервера Zabbix
+
+  - name: Config zabbix.conf Listenport=
+    ansible.builtin.lineinfile:
+      path: /etc/zabbix/zabbix_agent2.conf
+      search_string: '# ListenPort=10050'
+      line: ListenPort=10050
+
+  - name: Change permission docker.sock
+    ansible.builtin.file:
+      path: /var/run/docker.sock
+      owner: root
+      group: docker
+      mode: '0666'
+
+  - name: Enabling/restarting services Agent
+    service:
+      name: zabbix-agent2
+      state: started
+      enabled: yes
+
+  when:  (ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] == "22.04")
+
+  become: true
+  become_user: root
+  ignore_errors: true
+    
+  rescue:
+
+  - name: Print a message
+    ansible.builtin.debug:
+      msg: 'OS does not match'
+
