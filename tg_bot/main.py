@@ -22,7 +22,7 @@ menu = ['💻 Тех. поддержка',['admin'],'📚 Информация',
 
 @bot.message_handler(commands=['admin']) # admin панель
 def admin(message):
-    if message.chat.title == 'IT Digniori Arts':
+    if message.chat.title == 'Telegram Group Name IT':
         bot.send_message(chat_id=it_adm, text=f'Добрый день!\nВы в меню администратора.\nЧто Вам необходимо?\n', reply_markup=button.markup_admin())
     else:
         bot.send_message(message.chat.id,'Вы не являетесь администртором', reply_markup=button.markup_start())
@@ -52,7 +52,7 @@ def get_text_messages(message):
      ##########################      MAIN      ##############################
     
     elif message.text == '🤖':
-        if message.chat.title == 'DA_Secure':
+        if message.chat.title == 'Telegram Group Name IT Secure':
             bot.send_message(chat_id=secure_chat_id, text=f'Добрый день!\nВы в меню охраны.\nЧто необходимо сделать?\n', reply_markup=button.markup_secure())
         else:
             bot.send_message(message.chat.id,'Вы не можете использовать данную фунуцию...\nОбратитесь к администратору.', reply_markup=button.markup_start())
