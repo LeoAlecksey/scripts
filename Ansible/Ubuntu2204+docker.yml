@@ -1,0 +1,82 @@
+---
+  - name: Configure ubuntu
+    hosts: docker
+    tasks:
+      - block:
+        - name: update && upgrade
+          ansible.builtin.shell:
+            cmd: apt update && apt -y upgrade
+
+        - name: install curl
+          ansible.builtin.apt:
+            name: curl
+            state: present  
+
+        - name: install software-properties-common
+          ansible.builtin.apt:
+            name: software-properties-common
+            state: present   
+
+        - name: install ca-certificates
+          ansible.builtin.apt:
+            name: ca-certificates
+            state: present   
+
+        - name: install apt-transport-https
+          ansible.builtin.apt:
+            name: apt-transport-https
+            state: present
+
+        - name: Add Example GPG key
+          ansible.builtin.get_url:
+            url: https://download.docker.com/linux/ubuntu/gpg
+            dest: /etc/apt/keyrings/docker
+            mode: '0644'
+            force: true
+
+        - name: Add Example repo
+          ansible.builtin.apt_repository:
+            filename: example-repo
+            repo: 'deb [signed-by=/etc/apt/keyrings/docker] https://download.docker.com/linux/ubuntu jammy stable'
+
+        - name: update new repo
+          ansible.builtin.shell:
+            cmd: apt update
+
+        - name: install docker
+          ansible.builtin.apt:
+            name: docker-ce
+            state: present
+
+        - name: Enabling/restarting services
+          service:
+            name: docker
+            state: started
+            enabled: yes
+        
+        - name: Ensure group "docker"
+          ansible.builtin.group:
+            name: docker
+            state: present
+
+        - name: add user root in docker group
+          ansible.builtin.user:
+            name: root
+            group: docker
+            append: true
+
+        - name: change permission docker.sock
+          ansible.builtin.file:
+            path: /var/run/docker.sock
+            owner: root
+            group: docker
+            mode: '0666'
+
+        when:  (ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] == "22.04")
+        
+        rescue:
+
+        - name: Print a message
+          ansible.builtin.debug:
+            msg: 'OS does not match'
+          

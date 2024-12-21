@@ -1,0 +1,17 @@
+---
+  - name: Install openSSH Desktop Users
+    hosts: Users
+    tasks:
+
+      - name: Remove certs
+        ansible.windows.win_command:
+          cmd: powershell -command Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
+
+
+      - name: install ssh Server
+        ansible.windows.win_command:
+          cmd: Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+
+      - name: start ssh Server
+        ansible.windows.win_command:
+          cmd: powershell -command Start-Service sshd

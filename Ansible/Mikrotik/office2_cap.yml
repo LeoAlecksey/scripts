@@ -1,0 +1,43 @@
+---
+  - name: Cap task
+    hosts: CAPs_2
+    tasks:
+
+      - name: schelder_del_reboot 
+        community.routeros.command:
+          commands:
+          - /system scheduler remove reboot
+        become: true
+        vars:
+
+      - name: schelder_add_reboot 
+        community.routeros.command:
+          commands:
+          - /system scheduler add interval=3d name=reboot on-event="/system reboot" policy=reboot start-date=jan/01/2024 start-time=00:05:00
+        become: true
+
+      - name: enable_RoMON
+        community.routeros.command:
+          commands:
+          - /tool romon set enabled=yes
+        become: true
+
+      - name: set_time_zone
+        community.routeros.command:
+          commands:
+          - /system clock set time-zone-name=Europe/Moscow
+        become: true
+
+      - name: snmp
+        community.routeros.command:
+          commands:
+          - /snmp set contact=admin@example.ru enabled=yes trap-generators="" trap-version=2
+        become: true
+
+      - name: add user
+        community.routeros.command:
+          commands:
+          - /user add name=tech password=123456 group=full # Добавить данные специалиста поддержки
+        become: true
+
+

@@ -1,0 +1,42 @@
+---
+
+ - name: Install soft windows Domain Users
+   hosts: Users
+
+  
+   tasks:
+   
+   - name: Install Adobe Reader
+     win_chocolatey:
+      name: adobereader
+      state: present
+
+   - name: Install Notepad++
+     win_chocolatey:
+      name: notepadplusplus
+      state: present
+
+   - name: Install 7zip 
+     win_chocolatey:
+      name: 7zip
+      state: present
+
+   - name: Install zoom 
+     win_chocolatey:
+      name: zoom
+      state: present
+
+
+   - name: Install telegram
+     win_chocolatey:
+      name: telegram
+      state: present
+      
+   - name: Download getscreen.exe
+     win_get_url:
+      url: https://getscreen.ru/download/getscreen.exe
+      dest: C:\getscreen.exe
+
+   - name: Install MSI
+     win_command: C:\getscreen.exe -install -register=root@mail.com
+   
